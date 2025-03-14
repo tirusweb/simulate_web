@@ -9,6 +9,7 @@ const Home = () => {
   const [input, setInput] = useState("");
   const [files, setFiles] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [loading, setLoading] = useState(false); // State hiệu ứng loading
 
   const sendMessage = async () => {
     if (input.trim() !== "" || files.length > 0) {
@@ -16,7 +17,6 @@ const Home = () => {
       setMessages([...messages, newMessage]);
 
       if (currentChat !== null) {
-        // Cập nhật tin nhắn vào cuộc trò chuyện hiện tại
         setChats((prevChats) => {
           const updatedChats = [...prevChats];
           updatedChats[currentChat].messages.push(newMessage);
@@ -26,6 +26,7 @@ const Home = () => {
 
       setInput("");
       setFiles([]);
+      setLoading(true); // Bật hiệu ứng loading
 
       if (files.length > 0) {
         const formData = new FormData();
@@ -33,26 +34,35 @@ const Home = () => {
 
         try {
           const response = await axios.post(
-            "https://05d9-118-70-184-101.ngrok-free.app/predict",
+            "https://aad8-118-70-184-101.ngrok-free.app/predict",
             formData,
             { headers: { "Content-Type": "multipart/form-data" } }
           );
 
           if (response.data && response.data.results) {
-            const resultMessages = response.data.results.map((item) => 
-              `File: ${item.filename}, Vulnerable: ${item.vulnerable}`
-            ).join(" ; ");
+            const resultMessages = (
+              <ul className="list-disc pl-4">
+                {response.data.results.map((item, index) => (
+                  <li key={index} className="text-sm">
+                    📂 <strong>{item.filename}</strong> - {item.vulnerable ? "File An toàn" : "File chứa lỗ hổng"}
+                  </li>
+                ))}
+              </ul>
+            );
 
-            setMessages((prev) => [...prev, { text: resultMessages, sender: "ai" }]);
+            setMessages((prev) => [...prev, { text: resultMessages, sender: "ai", isList: true }]);
           } else {
             setMessages((prev) => [...prev, { text: "Không có dữ liệu phản hồi.", sender: "ai" }]);
           }
         } catch (error) {
           setMessages((prev) => [...prev, { text: `Lỗi khi gọi API: ${error.message}`, sender: "ai" }]);
+        } finally {
+          setLoading(false); // Tắt hiệu ứng loading
         }
       } else {
         setTimeout(() => {
-          setMessages((prev) => [...prev, { text: "Vui lòng gửi file để kiểm tra thuật toán !", sender: "ai" }]);
+          setMessages((prev) => [...prev, { text: "Vui lòng gửi file để kiểm tra thuật toán!", sender: "ai" }]);
+          setLoading(false); // Tắt loading nếu không có file
         }, 1000);
       }
     }
@@ -82,7 +92,7 @@ const Home = () => {
     <div className="flex h-screen bg-gray-900 text-white">
       {/* Sidebar */}
       {sidebarOpen && (
-        <div className=" w-30 bg-gray-800 p-4 shadow-lg flex flex-col">
+        <div className="w-30 bg-gray-800 p-4 shadow-lg flex flex-col">
           <div className="flex justify-between items-center">
             <button
               className="p-2 bg-blue-500 rounded-full text-white"
@@ -91,7 +101,6 @@ const Home = () => {
               <FaPlus />
             </button>
           </div>
-      
         </div>
       )}
 
@@ -119,6 +128,16 @@ const Home = () => {
               </div>
             </div>
           ))}
+
+          {/* Hiển thị loading khi đợi API phản hồi */}
+          {loading && (
+            <div className="flex justify-start">
+              <div className="p-3 rounded-2xl bg-gray-700 text-white">
+                <p className="italic text-gray-300">đang phân tích file...</p>
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mt-2"></div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* File List */}
