@@ -158,19 +158,12 @@ const Home = () => {
         )}
 
         {/* Input Box */}
-        <div className="p-4 border-t border-gray-600 flex items-center bg-gray-800 shadow-lg rounded-b-lg">
+        <div className="p-4 border-t border-gray-600  flex items-center justify-center bg-gray-800 shadow-lg rounded-b-lg">
           <label className="cursor-pointer mr-2">
-            <FaPaperclip className="text-gray-400 text-xl" />
+            <FaPaperclip className="text-gray-400 text-2xl" />
             <input type="file" multiple className="hidden" onChange={handleFileChange} />
           </label>
-          <input
-            type="text"
-            className="flex-1 p-3 border rounded-full bg-gray-700 text-white outline-none shadow-sm placeholder-gray-400"
-            placeholder="Nhập tin nhắn..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          />
+        
           <button className="ml-2 bg-blue-500 text-white p-3 rounded-full shadow-md" onClick={sendMessage}>
             <FaPaperPlane />
           </button>
