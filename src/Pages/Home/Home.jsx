@@ -60,7 +60,7 @@ const Home = () => {
                 {response.data.results.map((item, index) => (
                   <li key={index} className="text-sm">
                     📂 <strong>{item.filename}</strong> -{" "}
-                    {item.vulnerable ? "File An toàn" : "File chứa lỗ hổng"}
+                    {item.vulnerable ? "File chứa lỗ hổng" : "File An toàn"}
                   </li>
                 ))}
               </ul>
@@ -228,20 +228,22 @@ const Home = () => {
         )}
 
         {/* Input Box */}
-        <div className="p-4 border-t border-gray-600  flex items-center justify-center bg-gray-800 shadow-lg rounded-b-lg">
-          <label className="cursor-pointer mr-2">
-            <FaPaperclip className="text-gray-400 text-2xl" />
-            <input
-              type="file"
-              multiple
-              className="hidden"
-              onChange={handleFileChange}
-            />
-          </label>
-        
+        <div className="p-4 border-t border-gray-600 flex items-center justify-center bg-gray-800 shadow-lg rounded-b-lg">
+          <div className="flex items-center space-x-2">
+            <label className="cursor-pointer flex items-center space-x-2 bg-gray-700 p-2 rounded-lg hover:bg-gray-600">
+              <FaPaperclip className="text-gray-400 text-xl" />
+              <span className="text-gray-300">Chọn file</span>
+              <input
+                type="file"
+                multiple
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </label>
+          </div>
 
           <button
-            className="ml-2 bg-blue-500 text-white p-3 rounded-full shadow-md"
+            className="ml-2 bg-blue-500 text-white p-3 rounded-full shadow-md hover:bg-blue-600"
             onClick={sendMessage}
           >
             <FaPaperPlane />
