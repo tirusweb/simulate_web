@@ -44,7 +44,10 @@ const Home = () => {
   // Save chats to localStorage whenever they change
   useEffect(() => {
     if (chats.length > 0) {
-      localStorage.setItem("redai-saved-chats", JSON.stringify(chats.slice(-MAX_SAVED_CHATS)));
+      localStorage.setItem(
+        "redai-saved-chats",
+        JSON.stringify(chats.slice(-MAX_SAVED_CHATS))
+      );
     }
   }, [chats]);
 
@@ -67,7 +70,10 @@ const Home = () => {
 
       handleSendMessage();
     } else {
-      const aiMessage = { text: "Vui lòng chọn file để kiểm tra!", sender: "ai" };
+      const aiMessage = {
+        text: "Vui lòng chọn file để kiểm tra!",
+        sender: "ai",
+      };
       updateMessages(aiMessage);
     }
   };
@@ -92,30 +98,46 @@ const Home = () => {
 
     try {
       const response = await axios.post(
-        "https://c527-118-70-184-101.ngrok-free.app/predict",
+        "http://127.0.0.1:8000/predict",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
 
       if (response.data && response.data.results) {
         const resultMessages = (
-          <ul className="list-disc pl-4">
+          <div className="space-y-3">
+            <div className="font-medium mb-2">Kết quả phân tích:</div>
             {response.data.results.map((item, index) => (
-              <li key={index} className="text-sm flex items-center gap-2">
-                <FaFileCode className="text-blue-300" />
-                <strong>{item.filename}</strong> -{" "}
+              <div
+                key={index}
+                className={`p-3 rounded-lg border ${
+                  item.vulnerable
+                    ? "bg-red-50 border-red-200"
+                    : "bg-green-50 border-green-200"
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <FaFileCode
+                    className={
+                      item.vulnerable ? "text-red-500" : "text-green-500"
+                    }
+                  />
+                  <strong className="text-gray-800">{item.filename}</strong>
+                </div>
                 {item.vulnerable ? (
-                  <span className="text-red-400 flex items-center gap-1">
-                    <FaExclamationTriangle /> File chứa lỗ hổng
-                  </span>
+                  <div className="flex items-center gap-1 text-red-600 text-sm">
+                    <FaExclamationTriangle />
+                    <span>Phát hiện lỗ hổng bảo mật tiềm ẩn</span>
+                  </div>
                 ) : (
-                  <span className="text-green-400 flex items-center gap-1">
-                    <FaShieldAlt /> File An toàn
-                  </span>
+                  <div className="flex items-center gap-1 text-green-600 text-sm">
+                    <FaShieldAlt />
+                    <span>Không phát hiện lỗ hổng bảo mật</span>
+                  </div>
                 )}
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         );
 
         updateMessages({ text: resultMessages, sender: "ai", isList: true });
@@ -123,7 +145,18 @@ const Home = () => {
         updateMessages({ text: "Không có dữ liệu phản hồi.", sender: "ai" });
       }
     } catch (error) {
-      updateMessages({ text: `Lỗi khi gọi API: ${error.message}`, sender: "ai" });
+      updateMessages({
+        text: (
+          <div className="text-red-100 bg-red-500/20 p-3 rounded-lg border border-red-200/30">
+            <div className="flex items-center gap-2 font-medium">
+              <FaExclamationTriangle /> Lỗi khi gọi API
+            </div>
+            <div className="mt-1 text-sm opacity-90">{error.message}</div>
+          </div>
+        ),
+        sender: "ai",
+        isList: true,
+      });
     } finally {
       setLoading(false); // Tắt hiệu ứng loading
     }
@@ -131,14 +164,14 @@ const Home = () => {
 
   // Hàm cập nhật tin nhắn và lưu vào cuộc trò chuyện hiện tại
   const updateMessages = (newMessage) => {
-    setMessages(prev => [...prev, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
 
     if (currentChat !== null) {
-      setChats(prevChats => {
+      setChats((prevChats) => {
         const updatedChats = [...prevChats];
         updatedChats[currentChat] = {
           ...updatedChats[currentChat],
-          messages: [...updatedChats[currentChat].messages, newMessage]
+          messages: [...updatedChats[currentChat].messages, newMessage],
         };
         return updatedChats;
       });
@@ -154,12 +187,12 @@ const Home = () => {
   };
 
   const formatDate = (date) => {
-    return new Intl.DateTimeFormat('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Intl.DateTimeFormat("vi-VN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     }).format(date);
   };
 
@@ -201,106 +234,22 @@ const Home = () => {
     }
   };
 
-
-
   return (
-    <div className="flex h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-indigo-900 text-white">
+    <div className="flex h-screen bg-gradient-to-br from-teal-50 to-cyan-100 text-gray-800">
       {/* Sidebar */}
-      <div
-        className={`transition-all duration-300 ease-in-out ${
-          sidebarOpen ? "w-64" : "w-0"
-        } bg-gradient-to-b from-indigo-800 to-purple-900 shadow-xl`}
-      >
-        {sidebarOpen && (
-          <div className="p-6 flex flex-col h-full">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-white">RedAI Scanner</h2>
-            </div>
-
-            <div className="flex flex-col gap-3 mb-6">
-              <button
-                className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg text-white font-medium flex items-center gap-2 hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg"
-                onClick={startNewChat}
-              >
-                <FaPlus /> Cuộc trò chuyện mới
-              </button>
-
-              {chats.length > 0 && (
-                <button
-                  className="p-2 bg-indigo-800/50 rounded-lg text-indigo-300 text-sm flex items-center gap-2 hover:bg-indigo-700/50 transition-all border border-indigo-700/30"
-                  onClick={clearAllChats}
-                >
-                  <FaTimes /> Xóa tất cả cuộc trò chuyện
-                </button>
-              )}
-            </div>
-
-            <div className="flex-1 overflow-y-auto">
-              <div className="mb-3 text-indigo-300 flex items-center gap-2">
-                <FaHistory className="text-indigo-400" />
-                <span className="font-medium">Cuộc trò chuyện gần đây ({Math.min(chats.length, MAX_SAVED_CHATS)}/{MAX_SAVED_CHATS})</span>
-              </div>
-
-              {chats.length === 0 ? (
-                <div className="text-center p-4 text-indigo-400 bg-indigo-800/30 rounded-lg">
-                  <p>Chưa có cuộc trò chuyện nào</p>
-                </div>
-              ) : (
-                chats.map((chat, index) => (
-                  <div
-                    key={index}
-                    className={`p-3 mb-3 rounded-lg cursor-pointer transition-all ${
-                      currentChat === index
-                        ? "bg-indigo-700 shadow-md"
-                        : "hover:bg-indigo-700/50"
-                    }`}
-                    onClick={() => selectChat(index)}
-                  >
-                    <div className="flex justify-between items-center mb-1">
-                      <p className="font-medium truncate">{chat.title}</p>
-                    </div>
-                    {chat.formattedDate && (
-                      <div className="flex items-center text-xs text-indigo-300">
-                        <FaClock className="mr-1 text-indigo-400" />
-                        <span>{chat.formattedDate}</span>
-                      </div>
-                    )}
-                    <div className="mt-2 text-xs text-indigo-300">
-                      {chat.messages.length} tin nhắn
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            <div className="mt-auto pt-4 border-t border-indigo-700/50">
-              <div className="text-sm text-indigo-300">
-                <div className="flex items-center justify-between mb-2">
-                  <span>Cuộc trò chuyện đã lưu:</span>
-                  <span className="bg-indigo-700/50 px-2 py-1 rounded-md">{chats.length}/{MAX_SAVED_CHATS}</span>
-                </div>
-                <p>Phiên bản: 1.0.0</p>
-                <p>© 2023 RedAI Scanner</p>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
 
       <div className="flex flex-col flex-1">
         {/* Header */}
-        <header className="bg-gradient-to-r from-indigo-800 to-purple-900 p-4 text-white shadow-lg flex items-center justify-between">
+        <header className="bg-white border-b border-teal-100 p-4 text-gray-800 shadow-sm flex items-center justify-between">
           <div className="flex items-center">
             <button
-              className="mr-4 p-2 hover:bg-indigo-700/50 rounded-lg transition-all"
+              className="mr-4 p-2 hover:bg-gray-100 rounded-lg transition-all text-gray-600"
               onClick={() => setSidebarOpen(!sidebarOpen)}
             >
               <FaBars className="text-xl" />
             </button>
-            <h1 className="text-xl font-bold">
-              {currentChat !== null
-                ? chats[currentChat].title
-                : "Mô phỏng phần mềm"}
+            <h1 className="text-xl font-bold text-teal-800">
+              Phân tích mã nguồn
             </h1>
           </div>
 
@@ -309,7 +258,7 @@ const Home = () => {
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="bg-indigo-700/50 text-white p-2 rounded-lg border border-indigo-600 focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none pr-8 transition-all"
+                className="bg-white text-gray-700 p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 appearance-none pr-8 transition-all"
               >
                 <option value="GCN+CNN+DROPOUT+RF">GCN+CNN+DROPOUT+RF</option>
                 <option value="GCN+DROPOUT+RF">GCN+DROPOUT+RF</option>
@@ -317,9 +266,20 @@ const Home = () => {
                   SAGEConv+CNN+DROPOUT+MLP
                 </option>
               </select>
-              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none text-indigo-300">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-500">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
                 </svg>
               </div>
             </div>
@@ -327,15 +287,24 @@ const Home = () => {
         </header>
 
         {/* Chat Container */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-br from-indigo-900/90 via-purple-900/90 to-indigo-900/90">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-br from-teal-50 to-cyan-50">
           {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-full text-center text-indigo-300">
-              <FaRobot className="text-6xl mb-4 text-indigo-400" />
-              <h2 className="text-2xl font-bold mb-2">Chào mừng đến với RedAI Scanner</h2>
-              <p className="max-w-md mb-6">Tải lên file của bạn để kiểm tra lỗ hổng bảo mật với các mô hình AI tiên tiến</p>
-              <div className="flex items-center gap-3 bg-indigo-800/50 p-4 rounded-lg border border-indigo-700/50 max-w-md">
-                <FaFileCode className="text-indigo-400 text-xl" />
-                <p className="text-indigo-200">Nhấn vào nút "Chọn file để kiểm tra" bên dưới để bắt đầu</p>
+            <div className="flex flex-col items-center justify-center h-full text-center text-gray-600">
+              <div className="bg-teal-500 rounded-full p-6 mb-6">
+                <FaShieldAlt className="text-6xl text-white" />
+              </div>
+              <h2 className="text-2xl font-bold mb-2 text-teal-800">
+                Chào mừng đến với nhóm 06
+              </h2>
+              <p className="max-w-md mb-8 text-gray-600">
+                Tải lên file của bạn để kiểm tra lỗ hổng bảo mật với các mô hình
+                AI tiên tiến
+              </p>
+              <div className="flex items-center gap-3 bg-white p-4 rounded-lg border border-teal-100 max-w-md shadow-sm">
+                <FaFileCode className="text-teal-500 text-xl" />
+                <p className="text-gray-700">
+                  Nhấn vào nút "Chọn file để kiểm tra" bên dưới để bắt đầu
+                </p>
               </div>
             </div>
           )}
@@ -349,33 +318,60 @@ const Home = () => {
             >
               <div className="flex items-start max-w-md">
                 {msg.sender === "ai" && (
-                  <div className="bg-indigo-700 rounded-full p-2 mr-2">
+                  <div className="bg-teal-500 rounded-full p-2 mr-2 shadow-sm">
                     <FaRobot className="text-white" />
                   </div>
                 )}
 
                 <div
-                  className={`p-4 rounded-2xl shadow-md ${
+                  className={`p-4 rounded-2xl shadow-sm ${
                     msg.sender === "user"
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-700 rounded-tr-none"
-                      : "bg-gradient-to-r from-purple-700 to-indigo-800 rounded-tl-none"
+                      ? "bg-white border border-teal-100 rounded-tr-none"
+                      : "bg-teal-500 text-white rounded-tl-none"
                   }`}
                 >
                   {/* Hiển thị tin nhắn và status */}
-                  {msg.text && !msg.isStatus && !msg.isList && <p>{msg.text}</p>}
+                  {msg.text && !msg.isStatus && !msg.isList && (
+                    <p>{msg.text}</p>
+                  )}
 
                   {/* Nếu là thông báo về status */}
                   {msg.isStatus && (
-                    <p className="text-sm text-yellow-300 italic flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    <p
+                      className={`text-sm italic flex items-center gap-2 ${
+                        msg.sender === "user"
+                          ? "text-teal-600"
+                          : "text-teal-100"
+                      }`}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 10V3L4 14h7v7l9-11h-7z"
+                        />
                       </svg>
                       {msg.text}
                     </p>
                   )}
 
                   {/* Hiển thị danh sách kết quả */}
-                  {msg.isList && msg.text}
+                  {msg.isList && (
+                    <div
+                      className={
+                        msg.sender === "user" ? "text-gray-800" : "text-white"
+                      }
+                    >
+                      {msg.text}
+                    </div>
+                  )}
 
                   {/* Hiển thị files nếu có */}
                   {msg.files &&
@@ -385,7 +381,11 @@ const Home = () => {
                         href={URL.createObjectURL(file)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-blue-300 underline mt-2 flex items-center gap-2"
+                        className={`text-sm underline mt-2 flex items-center gap-2 ${
+                          msg.sender === "user"
+                            ? "text-teal-600"
+                            : "text-teal-100"
+                        }`}
                       >
                         <FaFileCode />
                         {file.name}
@@ -394,7 +394,7 @@ const Home = () => {
                 </div>
 
                 {msg.sender === "user" && (
-                  <div className="bg-blue-600 rounded-full p-2 ml-2">
+                  <div className="bg-teal-600 rounded-full p-2 ml-2 shadow-sm">
                     <FaUser className="text-white" />
                   </div>
                 )}
@@ -405,12 +405,12 @@ const Home = () => {
           {loading && (
             <div className="flex justify-start">
               <div className="flex items-start max-w-md">
-                <div className="bg-indigo-700 rounded-full p-2 mr-2">
+                <div className="bg-teal-500 rounded-full p-2 mr-2 shadow-sm">
                   <FaRobot className="text-white" />
                 </div>
-                <div className="p-4 rounded-2xl shadow-md bg-gradient-to-r from-purple-700 to-indigo-800 rounded-tl-none">
+                <div className="p-4 rounded-2xl shadow-sm bg-teal-500 text-white rounded-tl-none">
                   <div className="flex items-center gap-2">
-                    <FaSpinner className="animate-spin text-indigo-300" />
+                    <FaSpinner className="animate-spin text-teal-100" />
                     <p>Đang xử lý...</p>
                   </div>
                 </div>
@@ -423,21 +423,21 @@ const Home = () => {
 
         {/* File List */}
         {files.length > 0 && (
-          <div className="p-4 bg-indigo-800/80 border-t border-indigo-700">
-            <p className="font-semibold text-indigo-300 mb-2">Files đã chọn:</p>
+          <div className="p-4 bg-white border-t border-teal-100">
+            <p className="font-semibold text-teal-800 mb-2">Files đã chọn:</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
               {files.map((file, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-3 bg-indigo-700/50 rounded-lg text-white group hover:bg-indigo-700 transition-all"
+                  className="flex items-center justify-between p-3 bg-teal-50 rounded-lg text-gray-700 group hover:bg-teal-100 transition-all border border-teal-100"
                 >
                   <div className="flex items-center gap-2 truncate">
-                    <FaFileCode className="text-blue-300 flex-shrink-0" />
+                    <FaFileCode className="text-teal-600 flex-shrink-0" />
                     <span className="text-sm truncate">{file.name}</span>
                   </div>
                   <button
                     onClick={() => removeFile(index)}
-                    className="ml-2 text-indigo-300 hover:text-red-400 transition-colors"
+                    className="ml-2 text-gray-400 hover:text-red-500 transition-colors"
                   >
                     <FaTimes />
                   </button>
@@ -448,12 +448,14 @@ const Home = () => {
         )}
 
         {/* Input Box */}
-        <div className="p-4 border-t border-indigo-700 bg-gradient-to-r from-indigo-800 to-purple-900 shadow-lg">
+        <div className="p-4 border-t border-teal-100 bg-white shadow-sm">
           <div className="flex items-center justify-center gap-4 max-w-4xl mx-auto">
             <div className="flex items-center">
-              <label className="cursor-pointer flex items-center gap-3 bg-indigo-700/50 py-2 px-4 rounded-lg hover:bg-indigo-700 transition-all shadow-md">
-                <FaPaperclip className="text-indigo-300 text-xl" />
-                <span className="text-indigo-200 font-medium">Chọn file để kiểm tra</span>
+              <label className="cursor-pointer flex items-center gap-3 bg-teal-50 py-3 px-5 rounded-lg hover:bg-teal-100 transition-all shadow-sm border border-teal-100">
+                <FaPaperclip className="text-teal-600 text-xl" />
+                <span className="text-teal-800 font-medium">
+                  Chọn file để kiểm tra
+                </span>
                 <input
                   type="file"
                   multiple
@@ -464,7 +466,7 @@ const Home = () => {
             </div>
 
             <button
-              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-md hover:from-blue-600 hover:to-purple-700 transition-all flex items-center justify-center gap-2"
+              className="px-5 py-3 bg-teal-500 text-white rounded-lg shadow-sm hover:bg-teal-600 transition-all flex items-center justify-center gap-2 font-medium"
               onClick={sendMessage}
               disabled={loading}
             >
