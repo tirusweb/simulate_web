@@ -1,20 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import {
-  FaPaperPlane,
-  FaPaperclip,
-  FaTimes,
-  FaBars,
-  FaPlus,
-  FaRobot,
-  FaUser,
-  FaSpinner,
-  FaFileCode,
-  FaShieldAlt,
-  FaExclamationTriangle,
-  FaHistory,
-  FaClock,
-} from "react-icons/fa";
+  HiOutlinePaperAirplane,
+  HiOutlinePaperClip,
+  HiOutlineX,
+  HiOutlineShieldCheck,
+  HiOutlineUser,
+  HiOutlineRefresh,
+  HiOutlineDocumentText,
+  HiOutlineLightningBolt,
+  HiOutlineChip,
+  HiOutlineCode,
+  HiOutlineExclamation,
+} from "react-icons/hi";
 
 const MAX_SAVED_CHATS = 3; // Giới hạn số lượng cuộc trò chuyện được lưu
 
@@ -23,7 +21,6 @@ const Home = () => {
   const [currentChat, setCurrentChat] = useState(null); // Cuộc trò chuyện hiện tại
   const [messages, setMessages] = useState([]); // Tin nhắn của cuộc trò chuyện hiện tại
   const [files, setFiles] = useState([]);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [loading, setLoading] = useState(false); // State hiệu ứng loading
   const [status, setStatus] = useState("GCN+CNN+DROPOUT+RF");
   const messagesEndRef = useRef(null);
@@ -117,7 +114,7 @@ const Home = () => {
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <FaFileCode
+                  <HiOutlineDocumentText
                     className={
                       item.vulnerable ? "text-red-500" : "text-green-500"
                     }
@@ -126,12 +123,12 @@ const Home = () => {
                 </div>
                 {item.vulnerable ? (
                   <div className="flex items-center gap-1 text-red-600 text-sm">
-                    <FaExclamationTriangle />
+                    <HiOutlineExclamation />
                     <span>Phát hiện lỗ hổng bảo mật tiềm ẩn</span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-1 text-green-600 text-sm">
-                    <FaShieldAlt />
+                    <HiOutlineShieldCheck />
                     <span>Không phát hiện lỗ hổng bảo mật</span>
                   </div>
                 )}
@@ -149,7 +146,7 @@ const Home = () => {
         text: (
           <div className="text-red-100 bg-red-500/20 p-3 rounded-lg border border-red-200/30">
             <div className="flex items-center gap-2 font-medium">
-              <FaExclamationTriangle /> Lỗi khi gọi API
+              <HiOutlineExclamation /> Lỗi khi gọi API
             </div>
             <div className="mt-1 text-sm opacity-90">{error.message}</div>
           </div>
@@ -220,11 +217,15 @@ const Home = () => {
     setMessages([]);
   };
 
+  // Các hàm này được giữ lại nhưng không sử dụng trong giao diện hiện tại
+  // Sẽ được sử dụng khi cần hiển thị lịch sử cuộc trò chuyện
+  // eslint-disable-next-line no-unused-vars
   const selectChat = (index) => {
     setCurrentChat(index);
     setMessages(chats[index].messages);
   };
 
+  // eslint-disable-next-line no-unused-vars
   const clearAllChats = () => {
     if (window.confirm("Bạn có chắc chắn muốn xóa tất cả cuộc trò chuyện?")) {
       setChats([]);
@@ -235,30 +236,28 @@ const Home = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-teal-50 to-cyan-100 text-gray-800">
-      {/* Sidebar */}
-
-      <div className="flex flex-col flex-1">
+    <div className="flex h-screen bg-gradient-diagonal from-violet-50 via-blue-50 to-background-light text-text-primary">
+      {/* Main Container */}
+      <div className="flex flex-col flex-1 overflow-hidden">
         {/* Header */}
-        <header className="bg-white border-b border-teal-100 p-4 text-gray-800 shadow-sm flex items-center justify-between">
+        <header className="bg-surface-light border-b border-violet-100 p-4 shadow-soft flex items-center justify-between">
           <div className="flex items-center">
-            <button
-              className="mr-4 p-2 hover:bg-gray-100 rounded-lg transition-all text-gray-600"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-            >
-              <FaBars className="text-xl" />
-            </button>
-            <h1 className="text-xl font-bold text-teal-800">
-              Phân tích mã nguồn
-            </h1>
+            <div className="flex items-center mr-4">
+              <div className="bg-gradient-to-r from-violet-600 to-blue-600 p-2 rounded-lg shadow-soft mr-3">
+                <HiOutlineShieldCheck className="text-white text-xl" />
+              </div>
+              <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-700 to-blue-700">
+                Phân tích mã nguồn
+              </h1>
+            </div>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="relative group">
+            <div className="relative">
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="bg-white text-gray-700 p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 appearance-none pr-8 transition-all"
+                className="bg-white text-text-secondary p-2 rounded-lg border border-violet-200 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500 appearance-none pr-8 transition-all shadow-soft"
               >
                 <option value="GCN+CNN+DROPOUT+RF">GCN+CNN+DROPOUT+RF</option>
                 <option value="GCN+DROPOUT+RF">GCN+DROPOUT+RF</option>
@@ -266,7 +265,7 @@ const Home = () => {
                   SAGEConv+CNN+DROPOUT+MLP
                 </option>
               </select>
-              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-500">
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none text-violet-500">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-4 w-4"
@@ -286,174 +285,219 @@ const Home = () => {
           </div>
         </header>
 
-        {/* Chat Container */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-br from-teal-50 to-cyan-50">
-          {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-full text-center text-gray-600">
-              <div className="bg-teal-500 rounded-full p-6 mb-6">
-                <FaShieldAlt className="text-6xl text-white" />
+        {/* Main Content */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <div className="relative mb-8">
+                <div className="absolute inset-0 bg-gradient-radial from-violet-200 to-transparent opacity-30 rounded-full blur-xl"></div>
+                <div className="relative bg-gradient-to-r from-violet-600 to-blue-600 rounded-full p-6 shadow-elevated">
+                  <HiOutlineShieldCheck className="text-6xl text-white" />
+                </div>
               </div>
-              <h2 className="text-2xl font-bold mb-2 text-teal-800">
-                Chào mừng đến với nhóm 06
+              <h2 className="text-3xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-violet-700 to-blue-700">
+                Phân tích mã nguồn an toàn
               </h2>
-              <p className="max-w-md mb-8 text-gray-600">
-                Tải lên file của bạn để kiểm tra lỗ hổng bảo mật với các mô hình
-                AI tiên tiến
+              <p className="max-w-md mb-10 text-text-secondary text-lg">
+                Tải lên file của bạn để kiểm tra lỗ hổng bảo mật với các mô hình AI tiên tiến
               </p>
-              <div className="flex items-center gap-3 bg-white p-4 rounded-lg border border-teal-100 max-w-md shadow-sm">
-                <FaFileCode className="text-teal-500 text-xl" />
-                <p className="text-gray-700">
-                  Nhấn vào nút "Chọn file để kiểm tra" bên dưới để bắt đầu
-                </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl w-full mb-8">
+                <div className="bg-white p-6 rounded-2xl shadow-card border border-violet-100 flex flex-col items-center text-center">
+                  <div className="bg-violet-100 p-3 rounded-full mb-4">
+                    <HiOutlineCode className="text-2xl text-violet-600" />
+                  </div>
+                  <h3 className="font-semibold mb-2 text-violet-900">Phân tích mã nguồn</h3>
+                  <p className="text-text-secondary text-sm">Phát hiện lỗ hổng bảo mật trong mã nguồn của bạn</p>
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl shadow-card border border-violet-100 flex flex-col items-center text-center">
+                  <div className="bg-blue-100 p-3 rounded-full mb-4">
+                    <HiOutlineChip className="text-2xl text-blue-600" />
+                  </div>
+                  <h3 className="font-semibold mb-2 text-blue-900">Mô hình AI tiên tiến</h3>
+                  <p className="text-text-secondary text-sm">Sử dụng các mô hình học máy hiện đại nhất</p>
+                </div>
+
+                <div className="bg-white p-6 rounded-2xl shadow-card border border-violet-100 flex flex-col items-center text-center">
+                  <div className="bg-violet-100 p-3 rounded-full mb-4">
+                    <HiOutlineLightningBolt className="text-2xl text-violet-600" />
+                  </div>
+                  <h3 className="font-semibold mb-2 text-violet-900">Kết quả nhanh chóng</h3>
+                  <p className="text-text-secondary text-sm">Nhận kết quả phân tích trong thời gian ngắn</p>
+                </div>
+              </div>
+
+              <div className="bg-white p-8 rounded-2xl shadow-elevated border border-violet-100 max-w-lg w-full">
+                <div className="flex flex-col items-center text-center">
+                  <HiOutlineDocumentText className="text-4xl text-violet-600 mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Bắt đầu phân tích</h3>
+                  <p className="text-text-secondary mb-6">
+                    Tải lên file mã nguồn của bạn để bắt đầu quá trình phân tích bảo mật
+                  </p>
+                  <button
+                    onClick={() => document.getElementById('file-upload').click()}
+                    className="w-full py-3 px-6 bg-gradient-to-r from-violet-600 to-blue-600 text-white rounded-xl shadow-soft hover:shadow-elevated transition-all flex items-center justify-center gap-2 font-medium"
+                  >
+                    <HiOutlinePaperClip className="text-xl" />
+                    <span>Tải lên mã nguồn</span>
+                  </button>
+                  <input
+                    id="file-upload"
+                    type="file"
+                    multiple
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                </div>
               </div>
             </div>
-          )}
-
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={`flex ${
-                msg.sender === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
-              <div className="flex items-start max-w-md">
-                {msg.sender === "ai" && (
-                  <div className="bg-teal-500 rounded-full p-2 mr-2 shadow-sm">
-                    <FaRobot className="text-white" />
-                  </div>
-                )}
-
+          ) : (
+            <div className="max-w-4xl mx-auto space-y-6">
+              {messages.map((msg, index) => (
                 <div
-                  className={`p-4 rounded-2xl shadow-sm ${
-                    msg.sender === "user"
-                      ? "bg-white border border-teal-100 rounded-tr-none"
-                      : "bg-teal-500 text-white rounded-tl-none"
+                  key={index}
+                  className={`flex ${
+                    msg.sender === "user" ? "justify-end" : "justify-start"
                   }`}
                 >
-                  {/* Hiển thị tin nhắn và status */}
-                  {msg.text && !msg.isStatus && !msg.isList && (
-                    <p>{msg.text}</p>
-                  )}
+                  <div className="flex items-start max-w-2xl">
+                    {msg.sender === "ai" && (
+                      <div className="bg-gradient-to-r from-violet-600 to-blue-600 rounded-full p-2 mr-3 shadow-soft">
+                        <HiOutlineShieldCheck className="text-white" />
+                      </div>
+                    )}
 
-                  {/* Nếu là thông báo về status */}
-                  {msg.isStatus && (
-                    <p
-                      className={`text-sm italic flex items-center gap-2 ${
+                    <div
+                      className={`p-4 rounded-2xl shadow-card ${
                         msg.sender === "user"
-                          ? "text-teal-600"
-                          : "text-teal-100"
+                          ? "bg-white border border-violet-100 rounded-tr-none"
+                          : "bg-gradient-to-r from-violet-600 to-blue-600 text-white rounded-tl-none"
                       }`}
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M13 10V3L4 14h7v7l9-11h-7z"
-                        />
-                      </svg>
-                      {msg.text}
-                    </p>
-                  )}
+                      {/* Hiển thị tin nhắn và status */}
+                      {msg.text && !msg.isStatus && !msg.isList && (
+                        <p>{msg.text}</p>
+                      )}
 
-                  {/* Hiển thị danh sách kết quả */}
-                  {msg.isList && (
-                    <div
-                      className={
-                        msg.sender === "user" ? "text-gray-800" : "text-white"
-                      }
-                    >
-                      {msg.text}
+                      {/* Nếu là thông báo về status */}
+                      {msg.isStatus && (
+                        <p
+                          className={`text-sm italic flex items-center gap-2 ${
+                            msg.sender === "user"
+                              ? "text-violet-600"
+                              : "text-blue-100"
+                          }`}
+                        >
+                          <HiOutlineLightningBolt className="h-4 w-4" />
+                          {msg.text}
+                        </p>
+                      )}
+
+                      {/* Hiển thị danh sách kết quả */}
+                      {msg.isList && (
+                        <div
+                          className={
+                            msg.sender === "user" ? "text-text-primary" : "text-white"
+                          }
+                        >
+                          {msg.text}
+                        </div>
+                      )}
+
+                      {/* Hiển thị files nếu có */}
+                      {msg.files &&
+                        msg.files.map((file, i) => (
+                          <a
+                            key={i}
+                            href={URL.createObjectURL(file)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`text-sm underline mt-2 flex items-center gap-2 ${
+                              msg.sender === "user"
+                                ? "text-violet-600"
+                                : "text-blue-100"
+                            }`}
+                          >
+                            <HiOutlineDocumentText />
+                            {file.name}
+                          </a>
+                        ))}
                     </div>
-                  )}
 
-                  {/* Hiển thị files nếu có */}
-                  {msg.files &&
-                    msg.files.map((file, i) => (
-                      <a
-                        key={i}
-                        href={URL.createObjectURL(file)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`text-sm underline mt-2 flex items-center gap-2 ${
-                          msg.sender === "user"
-                            ? "text-teal-600"
-                            : "text-teal-100"
-                        }`}
-                      >
-                        <FaFileCode />
-                        {file.name}
-                      </a>
-                    ))}
-                </div>
-
-                {msg.sender === "user" && (
-                  <div className="bg-teal-600 rounded-full p-2 ml-2 shadow-sm">
-                    <FaUser className="text-white" />
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-
-          {loading && (
-            <div className="flex justify-start">
-              <div className="flex items-start max-w-md">
-                <div className="bg-teal-500 rounded-full p-2 mr-2 shadow-sm">
-                  <FaRobot className="text-white" />
-                </div>
-                <div className="p-4 rounded-2xl shadow-sm bg-teal-500 text-white rounded-tl-none">
-                  <div className="flex items-center gap-2">
-                    <FaSpinner className="animate-spin text-teal-100" />
-                    <p>Đang xử lý...</p>
+                    {msg.sender === "user" && (
+                      <div className="bg-gradient-to-r from-blue-600 to-violet-600 rounded-full p-2 ml-3 shadow-soft">
+                        <HiOutlineUser className="text-white" />
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
+              ))}
+
+              {loading && (
+                <div className="flex justify-start">
+                  <div className="flex items-start max-w-2xl">
+                    <div className="bg-gradient-to-r from-violet-600 to-blue-600 rounded-full p-2 mr-3 shadow-soft">
+                      <HiOutlineShieldCheck className="text-white" />
+                    </div>
+                    <div className="p-4 rounded-2xl shadow-card bg-gradient-to-r from-violet-600 to-blue-600 text-white rounded-tl-none">
+                      <div className="flex items-center gap-2">
+                        <HiOutlineRefresh className="animate-spin text-blue-100" />
+                        <p>Đang phân tích mã nguồn...</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div ref={messagesEndRef} />
             </div>
           )}
-
-          <div ref={messagesEndRef} />
         </div>
 
         {/* File List */}
         {files.length > 0 && (
-          <div className="p-4 bg-white border-t border-teal-100">
-            <p className="font-semibold text-teal-800 mb-2">Files đã chọn:</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-              {files.map((file, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-3 bg-teal-50 rounded-lg text-gray-700 group hover:bg-teal-100 transition-all border border-teal-100"
+          <div className="p-4 bg-white border-t border-violet-100 shadow-soft">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-center justify-between mb-3">
+                <p className="font-semibold text-violet-900">Files đã chọn ({files.length})</p>
+                <button
+                  onClick={() => setFiles([])}
+                  className="text-sm px-3 py-1 text-danger-DEFAULT hover:bg-danger-light rounded-lg transition-colors"
                 >
-                  <div className="flex items-center gap-2 truncate">
-                    <FaFileCode className="text-teal-600 flex-shrink-0" />
-                    <span className="text-sm truncate">{file.name}</span>
-                  </div>
-                  <button
-                    onClick={() => removeFile(index)}
-                    className="ml-2 text-gray-400 hover:text-red-500 transition-colors"
+                  Xóa tất cả
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {files.map((file, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 bg-violet-50 rounded-xl text-text-secondary hover:bg-violet-100 transition-all border border-violet-100 shadow-soft"
                   >
-                    <FaTimes />
-                  </button>
-                </div>
-              ))}
+                    <div className="flex items-center gap-2 truncate">
+                      <HiOutlineDocumentText className="text-violet-600 flex-shrink-0" />
+                      <span className="text-sm font-medium truncate">{file.name}</span>
+                    </div>
+                    <button
+                      onClick={() => removeFile(index)}
+                      className="ml-2 text-text-tertiary hover:text-danger-DEFAULT transition-colors"
+                    >
+                      <HiOutlineX />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
         {/* Input Box */}
-        <div className="p-4 border-t border-teal-100 bg-white shadow-sm">
-          <div className="flex items-center justify-center gap-4 max-w-4xl mx-auto">
-            <div className="flex items-center">
-              <label className="cursor-pointer flex items-center gap-3 bg-teal-50 py-3 px-5 rounded-lg hover:bg-teal-100 transition-all shadow-sm border border-teal-100">
-                <FaPaperclip className="text-teal-600 text-xl" />
-                <span className="text-teal-800 font-medium">
+        <div className="p-4 border-t border-violet-100 bg-white shadow-soft">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-4xl mx-auto">
+            <div className="w-full sm:w-auto">
+              <label className="cursor-pointer flex items-center justify-center gap-3 bg-violet-50 py-3 px-5 rounded-xl hover:bg-violet-100 transition-all shadow-soft border border-violet-100 w-full">
+                <HiOutlinePaperClip className="text-violet-600 text-xl" />
+                <span className="text-violet-900 font-medium">
                   Chọn file để kiểm tra
                 </span>
                 <input
@@ -466,16 +510,16 @@ const Home = () => {
             </div>
 
             <button
-              className="px-5 py-3 bg-teal-500 text-white rounded-lg shadow-sm hover:bg-teal-600 transition-all flex items-center justify-center gap-2 font-medium"
+              className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-violet-600 to-blue-600 text-white rounded-xl shadow-soft hover:shadow-elevated transition-all flex items-center justify-center gap-2 font-medium"
               onClick={sendMessage}
               disabled={loading}
             >
               {loading ? (
-                <FaSpinner className="animate-spin" />
+                <HiOutlineRefresh className="animate-spin" />
               ) : (
                 <>
-                  <FaPaperPlane />
-                  <span>Kiểm tra</span>
+                  <HiOutlinePaperAirplane className="transform rotate-90" />
+                  <span>Phân tích bảo mật</span>
                 </>
               )}
             </button>
